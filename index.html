@@ -13,6 +13,12 @@
       crossorigin
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.0.0/react-router-dom.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <div id="root"></div>
@@ -20,9 +26,9 @@
       const { useState, useEffect } = React
 
       const App = () => {
-        const [author, setAuthor] = useState([])
+        const [authors, setAuthors] = useState([])
         const [authorName, setAuthorName] = useState("")
-        const [book, setBook] = useState([])
+        const [books, setBooks] = useState([])
         const [bookName, setBookName] = useState("")
         const [description, setDescription] = useState([])
         useEffect(() => {
@@ -30,22 +36,17 @@
           Promise.all([axios.get("/api/authors"), axios.get("/api/books")])
             .then(responses => responses.map(response => response.data))
             .then(results => {
-              setAuthor(results[0])
-              setBook(results[1])
+              setAuthors(results[0])
+              setBooks(results[1])
             })
         }, [])
-
-        const onSubmit = ev => {
-          ev.preventDefault()
-          createNewThing({})
-        }
 
         const createAuthor = async () => {
           try {
             const created = (await axios.post(`/api/authors/${authorName}`))
               .data
 
-            setAuthor([...author, created])
+            setAuthors([...authors, created])
           } catch (ex) {
             console.log(ex)
           }
@@ -58,9 +59,55 @@
                 `/api/books/${authorName}/${bookName}/${description}`
               )
             ).data
-            setBook([...book, created])
+            console.log(created, "this is my response from axios.post")
+            if (created.authorResponse) {
+              setAuthors([...authors, created.authorResponse])
+              setBooks([...books, created.bookResponse])
+            } else {
+              setBooks([...books, created])
+            }
           } catch (ex) {
             console.log(ex)
+          }
+        }
+
+        const searchAuthor = async ev => {
+          const authorName = ev.target.value
+          if (authorName) {
+            const authors = (await axios.get(`/api/authors/${authorName}`)).data
+            const books = (await axios.get(`api/books/${authorName}`)).data
+            setAuthors([authors])
+            setBooks([...books])
+          } else {
+            axios
+              .get("/api/authors")
+              .then(response => {
+                setAuthors([...response.data])
+              })
+              .then(
+                axios
+                  .get("/api/books")
+                  .then(response => setBooks([...response.data]))
+              )
+          }
+        }
+
+        const searchBooks = async ev => {
+          const bookName = ev.target.value
+          if (bookName) {
+            const books = (await axios.get(`api/bookTitle/${bookName}`)).data
+            setBooks([...books])
+          } else {
+            axios
+              .get("/api/authors")
+              .then(response => {
+                setAuthors([...response.data])
+              })
+              .then(
+                axios
+                  .get("/api/books")
+                  .then(response => setBooks([...response.data]))
+              )
           }
         }
 
@@ -69,20 +116,29 @@
             <h1> Book Shelf</h1>
             <div className="containers">
               <div className="search-boxes">
-                Add Author{" "}
-                <input onChange={ev => setAuthorName(ev.target.value)} />
-                <button onClick={() => createAuthor()}>+</button>
-                Add Book <input onChange={ev => setBookName(ev.target.value)} />
+                Book Title
+                <input onChange={ev => setBookName(ev.target.value)} />
                 Author <input onChange={ev => setAuthorName(ev.target.value)} />
-                Description{" "}
+                Description
                 <input onChange={ev => setDescription(ev.target.value)} />
-                <button onClick={() => createBook()}>+</button>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  data-toggle="popover"
+                  title="Popover title"
+                  onClick={createBook}
+                >
+                  +
+                </button>
               </div>
               <div className="lists">
                 <div id="author-list">
-                  <h1> Authors</h1>
-                  <input className="search-boxes"></input>
-                  {author.map(a => {
+                  <h1> Authors ({authors.length})</h1>
+                  <input
+                    className="search-boxes"
+                    onChange={searchAuthor}
+                  ></input>
+                  {authors.map(a => {
                     return (
                       <div id="name" key={a.id}>
                         {a.name}
@@ -92,29 +148,32 @@
                 </div>
 
                 <div id="book-list">
-                  <h1>Books</h1>
-                  <input className="search-boxes"></input>
+                  <h1>Books ({books.length})</h1>
+                  <input
+                    className="search-boxes"
+                    onChange={searchBooks}
+                  ></input>
 
-                  {book.map(b => {
+                  {books.map(b => {
                     return (
-                      <div id="name" key={b.id}>
-                        {b.name}
+                      <div id="title" key={b.id}>
+                        {b.title}
                       </div>
                     )
                   })}
                 </div>
                 <div id="description">
                   <h1>Description</h1>
-
-                  <input className="search-boxes"></input>
-                  {book.map(d => {
-                    console.log(book)
-                    return (
-                      <div id="name" key={d.id}>
-                        {d.description}
-                      </div>
-                    )
-                  })}
+                  {books.length > 1
+                    ? "Select a book to see a description"
+                    : books.map(d => {
+                        let fullDescrip = d.description
+                        return (
+                          <div id="title" key={d.id}>
+                            {fullDescrip.substr(0, 50)}...
+                          </div>
+                        )
+                      })}
                 </div>
               </div>
             </div>
