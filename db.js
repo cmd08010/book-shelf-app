@@ -8,7 +8,7 @@ client.connect()
 
 const sync = async () => {
   const SQL = `    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-  DROP TABLE IF EXISTS description;
+
   DROP TABLE IF EXISTS books;
   DROP TABLE IF EXISTS authors;
   CREATE TABLE authors
@@ -22,20 +22,15 @@ const sync = async () => {
   (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR NOT NULL,
-
-    date_create TIMESTAMP default CURRENT_TIMESTAMP
-  );
-  CREATE TABLE description
-  (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR NOT NULL,
-
+    author_id UUID references authors(id),
+    description VARCHAR DEFAULT 'mystery story about a ghost and his friends',
     date_create TIMESTAMP default CURRENT_TIMESTAMP
   );
 
-  INSERT INTO authors (name) VALUES ('Colleen author name');
-  INSERT INTO books (name) VALUES ('book name');
-  INSERT INTO description (name) VALUES ('description');
+
+  INSERT INTO authors (name) VALUES ('Colleen');
+  INSERT INTO books (name, author_id) VALUES ('book name', (SELECT id FROM authors WHERE name = 'Colleen'));
+
   `
   await client.query(SQL)
 }
@@ -54,9 +49,10 @@ getAuthor = async id => {
 }
 
 createAuthor = async name => {
-  const SQL = `INSERT INTO authors(name) VALUES ($1)
+  const SQL = `INSERT INTO authors (name) VALUES ($1)
   returning *`
   const response = await client.query(SQL, [name])
+  console.log(response)
   return response.rows[0]
 }
 
@@ -67,31 +63,20 @@ getBooks = async () => {
   console.log(response.rows)
   return response.rows
 }
-createBook = async (name, author) => {
-  const SQL = `INSERT INTO books(name, id) VALUES ($1, $2 )
+createBook = async (author, name, description) => {
+  const SQL = `INSERT INTO books(name, author_id, description) VALUES ($1, (SELECT id FROM authors WHERE name = $2), $3)
   returning *`
-  const response = await client.query(SQL, [name, author])
+  const response = await client.query(SQL, [name, author, description])
   return response.rows[0]
 }
 
 //Description
-getDescription = async () => {
-  const SQL = `SELECT * FROM description`
-  const response = await client.query(SQL)
-  return response.rows
-}
-
-createDescription = async name => {
-  const SQL = `INSERT INTO description(name) VALUES ($1)
-  returning *`
-  const response = await client.query(SQL, [name])
-  return response.rows[0]
-}
 
 module.exports = {
   sync,
   getAuthors,
   getBooks,
-  getDescription,
-  createAuthor
+
+  createAuthor,
+  createBook
 }

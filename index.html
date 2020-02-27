@@ -21,21 +21,17 @@
 
       const App = () => {
         const [author, setAuthor] = useState([])
+        const [authorName, setAuthorName] = useState("")
         const [book, setBook] = useState([])
+        const [bookName, setBookName] = useState("")
         const [description, setDescription] = useState([])
         useEffect(() => {
-          Promise.all([
-            axios.get("/api/authors"),
-            axios.get("/api/books"),
-            axios.get("/api/description")
-          ])
+          console.log("use effect running")
+          Promise.all([axios.get("/api/authors"), axios.get("/api/books")])
             .then(responses => responses.map(response => response.data))
             .then(results => {
-              console.log(results, "results")
-
               setAuthor(results[0])
               setBook(results[1])
-              setDescription(results[2])
             })
         }, [])
 
@@ -43,22 +39,28 @@
           ev.preventDefault()
           createNewThing({})
         }
-        const createNewThing = async author => {
-          try {
-            const created = (await axios.post("/api/authors", author)).data
-            setAuthor([...author, created])
-            setError("")
-          } catch (ex) {
-            setError(ex.response.data.message)
-          }
-        }
+
         const createAuthor = async () => {
           try {
-            const created = (await axios.post("/api/authors", author)).data
+            const created = (await axios.post(`/api/authors/${authorName}`))
+              .data
+
             setAuthor([...author, created])
-            setError("")
           } catch (ex) {
-            setError(ex.response.data.message)
+            console.log(ex)
+          }
+        }
+
+        const createBook = async () => {
+          try {
+            const created = (
+              await axios.post(
+                `/api/books/${authorName}/${bookName}/${description}`
+              )
+            ).data
+            setBook([...book, created])
+          } catch (ex) {
+            console.log(ex)
           }
         }
 
@@ -67,16 +69,19 @@
             <h1> Book Shelf</h1>
             <div className="containers">
               <div className="search-boxes">
-                <input onChange={ev => setAuthor([ev.target.value])} />
+                Add Author{" "}
+                <input onChange={ev => setAuthorName(ev.target.value)} />
                 <button onClick={() => createAuthor()}>+</button>
-                <input></input>
-                <button onClick={onSubmit}>+</button>
-                <input></input>
-                <button onClick={onSubmit}>+</button>
+                Add Book <input onChange={ev => setBookName(ev.target.value)} />
+                Author <input onChange={ev => setAuthorName(ev.target.value)} />
+                Description{" "}
+                <input onChange={ev => setDescription(ev.target.value)} />
+                <button onClick={() => createBook()}>+</button>
               </div>
               <div className="lists">
                 <div id="author-list">
                   <h1> Authors</h1>
+                  <input className="search-boxes"></input>
                   {author.map(a => {
                     return (
                       <div id="name" key={a.id}>
@@ -88,6 +93,8 @@
 
                 <div id="book-list">
                   <h1>Books</h1>
+                  <input className="search-boxes"></input>
+
                   {book.map(b => {
                     return (
                       <div id="name" key={b.id}>
@@ -98,10 +105,13 @@
                 </div>
                 <div id="description">
                   <h1>Description</h1>
-                  {description.map(d => {
+
+                  <input className="search-boxes"></input>
+                  {book.map(d => {
+                    console.log(book)
                     return (
                       <div id="name" key={d.id}>
-                        {d.name}
+                        {d.description}
                       </div>
                     )
                   })}

@@ -31,16 +31,17 @@ app.get("/api/books", async (req, res, next) => {
     .catch(next)
 })
 
-app.get("/api/description", async (req, res, next) => {
+app.post("/api/authors/:name", async (req, res, next) => {
   await db
-    .getDescription()
+    .createAuthor(req.params.name)
     .then(response => res.send(response))
     .catch(next)
 })
-app.post("/api/authors", async (req, res, next) => {
-  console.log(req)
+
+app.post("/api/books/:author/:name/:description", async (req, res, next) => {
+  console.log(req.params)
   await db
-    .createAuthor(req.body.name)
+    .createBook(req.params.author, req.params.name, req.params.description)
     .then(response => res.send(response))
     .catch(next)
 })
