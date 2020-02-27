@@ -20,8 +20,98 @@
       const { useState, useEffect } = React
 
       const App = () => {
-        return <div>New HTML</div>
+        const [author, setAuthor] = useState([])
+        const [book, setBook] = useState([])
+        const [description, setDescription] = useState([])
+        useEffect(() => {
+          Promise.all([
+            axios.get("/api/authors"),
+            axios.get("/api/books"),
+            axios.get("/api/description")
+          ])
+            .then(responses => responses.map(response => response.data))
+            .then(results => {
+              console.log(results, "results")
+
+              setAuthor(results[0])
+              setBook(results[1])
+              setDescription(results[2])
+            })
+        }, [])
+
+        const onSubmit = ev => {
+          ev.preventDefault()
+          createNewThing({})
+        }
+        const createNewThing = async author => {
+          try {
+            const created = (await axios.post("/api/authors", author)).data
+            setAuthor([...author, created])
+            setError("")
+          } catch (ex) {
+            setError(ex.response.data.message)
+          }
+        }
+        const createAuthor = async () => {
+          try {
+            const created = (await axios.post("/api/authors", author)).data
+            setAuthor([...author, created])
+            setError("")
+          } catch (ex) {
+            setError(ex.response.data.message)
+          }
+        }
+
+        return (
+          <div>
+            <h1> Book Shelf</h1>
+            <div className="containers">
+              <div className="search-boxes">
+                <input onChange={ev => setAuthor([ev.target.value])} />
+                <button onClick={() => createAuthor()}>+</button>
+                <input></input>
+                <button onClick={onSubmit}>+</button>
+                <input></input>
+                <button onClick={onSubmit}>+</button>
+              </div>
+              <div className="lists">
+                <div id="author-list">
+                  <h1> Authors</h1>
+                  {author.map(a => {
+                    return (
+                      <div id="name" key={a.id}>
+                        {a.name}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div id="book-list">
+                  <h1>Books</h1>
+                  {book.map(b => {
+                    return (
+                      <div id="name" key={b.id}>
+                        {b.name}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div id="description">
+                  <h1>Description</h1>
+                  {description.map(d => {
+                    return (
+                      <div id="name" key={d.id}>
+                        {d.name}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
       }
+
       const root = document.querySelector("#root")
       ReactDOM.render(<App />, root)
     </script>
