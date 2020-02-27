@@ -53,21 +53,24 @@
         }
 
         const createBook = async () => {
-          try {
-            const created = (
-              await axios.post(
-                `/api/books/${authorName}/${bookName}/${description}`
-              )
-            ).data
-            console.log(created, "this is my response from axios.post")
-            if (created.authorResponse) {
-              setAuthors([...authors, created.authorResponse])
-              setBooks([...books, created.bookResponse])
-            } else {
-              setBooks([...books, created])
-            }
-          } catch (ex) {
-            console.log(ex)
+          if (!authorName) {
+            alert("Please input an Author's name")
+          }
+          if (!bookName) {
+            createAuthor()
+          }
+
+          const created = (
+            await axios.post(
+              `/api/books/${authorName}/${bookName}/${description}`
+            )
+          ).data
+          console.log(created, "this is my response from axios.post")
+          if (created.authorResponse) {
+            setAuthors([...authors, created.authorResponse])
+            setBooks([...books, created.bookResponse])
+          } else {
+            setBooks([...books, created])
           }
         }
 
