@@ -70,10 +70,6 @@ app.post("/api/books/:author/:name/:description", async (req, res, next) => {
   await db
     .getAuthor(req.params.author)
     .then(async authorExists => {
-      console.log(
-        authorExists,
-        "first response to see if there is an author already"
-      )
       if (!authorExists) {
         console.log("in if statement")
         db.createAuthor(req.params.author).then(async authorResponse => {
@@ -87,11 +83,7 @@ app.post("/api/books/:author/:name/:description", async (req, res, next) => {
               res.send({ authorResponse, bookResponse })
             })
         })
-
-        // .then(responses => console.log(responses))
-        // .catch(next)
       } else {
-        console.log("in else statement")
         await db
           .createBook(
             req.params.author,
