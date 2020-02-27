@@ -8,7 +8,6 @@ client.connect()
 
 const sync = async () => {
   const SQL = `    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
   DROP TABLE IF EXISTS books;
   DROP TABLE IF EXISTS authors;
   CREATE TABLE authors
@@ -17,66 +16,80 @@ const sync = async () => {
     name VARCHAR NOT NULL,
     date_create TIMESTAMP default CURRENT_TIMESTAMP
   );
-
   CREATE TABLE books
   (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR NOT NULL,
+    title VARCHAR NOT NULL,
     author_id UUID references authors(id),
     description VARCHAR DEFAULT 'mystery story about a ghost and his friends',
     date_create TIMESTAMP default CURRENT_TIMESTAMP
   );
+  INSERT INTO authors (name) VALUES ('JK Rowling');
 
-
-  INSERT INTO authors (name) VALUES ('Colleen');
-  INSERT INTO books (name, author_id) VALUES ('book name', (SELECT id FROM authors WHERE name = 'Colleen'));
+  INSERT INTO books (title, author_id, description) VALUES ('Harry Potter and the Philosophers Stone', (SELECT id FROM authors WHERE name = 'JK Rowling'), 'The first novel in the fantasy series, Harry Potter. It follows Harry Potter, a young wizard who discovers his magical heritage on his eleventh birthday, when he receives a letter of acceptance to Hogwarts School of Witchcraft and Wizardry.');
 
   `
   await client.query(SQL)
 }
 
 //Authors
-getAuthors = async () => {
+const getAuthors = async () => {
   const SQL = `SELECT * FROM authors`
   const response = await client.query(SQL)
   return response.rows
 }
 
-getAuthor = async id => {
-  const SQL = `SELECT * FROM authors WHERE id=$1`
-  const response = await client.query(SQL)
+const getAuthor = async name => {
+  const SQL = `SELECT * FROM authors WHERE name=$1`
+  const response = await client.query(SQL, [name])
   return response.rows[0]
 }
 
-createAuthor = async name => {
+const createAuthor = async name => {
   const SQL = `INSERT INTO authors (name) VALUES ($1)
   returning *`
   const response = await client.query(SQL, [name])
-  console.log(response)
+
   return response.rows[0]
 }
 
 //Books
-getBooks = async () => {
+const getBooks = async () => {
   const SQL = `SELECT * FROM books`
   const response = await client.query(SQL)
   console.log(response.rows)
   return response.rows
 }
-createBook = async (author, name, description) => {
-  const SQL = `INSERT INTO books(name, author_id, description) VALUES ($1, (SELECT id FROM authors WHERE name = $2), $3)
+
+const getBookTitle = async title => {
+  const SQL = `SELECT * FROM books WHERE title = $1`
+  const response = await client.query(SQL, [title])
+  return response.rows
+}
+
+const getBook = async author => {
+  const SQL = `SELECT * FROM books WHERE author_id IN (select id from authors where $1 = name)
+  `
+  const response = await client.query(SQL, [author])
+
+  return response.rows
+}
+const createBook = async (author, name, description) => {
+  const SQL = `
+  INSERT INTO books(title, author_id, description) VALUES ($1, (SELECT id FROM authors WHERE name = $2), $3)
   returning *`
+
   const response = await client.query(SQL, [name, author, description])
   return response.rows[0]
 }
-
-//Description
 
 module.exports = {
   sync,
   getAuthors,
   getBooks,
-
+  getAuthor,
+  getBook,
   createAuthor,
-  createBook
+  createBook,
+  getBookTitle
 }

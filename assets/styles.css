@@ -38,11 +38,13 @@ body {
 .search-boxes {
   display: flex;
   flex-direction: row;
-  height: 50px;
+  height: 5%;
   width: 90%;
   border: 1px solid black;
   background-color: white;
   margin: 2rem;
+  padding: 20px;
+  justify-content: space-around;
 }
 
 .lists {
@@ -122,4 +124,18 @@ section {
   border-radius: 3rem;
   flex-direction: column;
   align-items: center;
+}
+
+#title {
+  display: flex;
+  flex-direction: column;
+  margin: 2rem;
+}
+
+button {
+  border-radius: 75%;
+}
+
+#name {
+  font-size: xx-large;
 }
