@@ -17,6 +17,34 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + "/index.html"))
 })
 
+app.get("/api/authors", async (req, res, next) => {
+  await db
+    .getAuthors()
+    .then(response => res.send(response))
+    .catch(next)
+})
+
+app.get("/api/books", async (req, res, next) => {
+  await db
+    .getBooks()
+    .then(response => res.send(response))
+    .catch(next)
+})
+
+app.get("/api/description", async (req, res, next) => {
+  await db
+    .getDescription()
+    .then(response => res.send(response))
+    .catch(next)
+})
+app.post("/api/authors", async (req, res, next) => {
+  console.log(req)
+  await db
+    .createAuthor(req.body.name)
+    .then(response => res.send(response))
+    .catch(next)
+})
+
 db.sync()
   .then(() => {
     console.log("db synced")
