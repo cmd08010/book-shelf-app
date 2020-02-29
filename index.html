@@ -76,16 +76,23 @@
           }
         }
 
-        const searchAuthor = async ev => {
+        const searchAuthor = ev => {
           const authorName = ev.target.value
           if (authorName) {
-            const authors = (await axios.get(`/api/authors/${authorName}`)).data
-            const books = (await axios.get(`api/books/${authorName}`)).data
-            setAuthors([authors])
-            setBooks([...books])
+            axios
+              .get(`/api/authors/${authorName}`)
+              .then(response => setAuthors([response.data]))
+              .then(
+                axios
+                  .get(`api/books/${authorName}`)
+                  .then(response => setBooks([...response.data]))
+              )
           } else {
-            setAuthors([...(await axios.get("/api/authors")).data])
-            setBooks([...(await axios.get("/api/books").data)])
+            axios
+              .get("/api/authors")
+              .data.then(authorsData => setAuthors([...authorsData]))
+              .then(axios.get("/api/books"))
+              .data.then(booksData => setBooks([...booksData]))
           }
         }
 
@@ -118,7 +125,6 @@
 
         const updateReadStatus = book => {
           book.read === "true" ? (book.read = "false") : (book.read = "true")
-
           setBooks([...books])
         }
 
@@ -143,9 +149,12 @@
                 </button>
               </div>
               <div className="lists">
-                <div id="author-list">
+                <div className="authors lists">
                   <h1> Authors ({authors.length})</h1>
-                  <input className="search-boxes"></input>
+                  <input
+                    className="search-boxes"
+                    onChange={searchAuthor}
+                  ></input>
                   {authors.map(a => {
                     return (
                       <div id="name" key={a.id}>
@@ -164,7 +173,7 @@
                   })}
                 </div>
 
-                <div id="book-list">
+                <div className="books lists">
                   <h1>Books ({books.length})</h1>
                   <input
                     className="search-boxes"
@@ -193,7 +202,7 @@
                     )
                   })}
                 </div>
-                <div id="description">
+                <div className="description">
                   <h1>Description</h1>
 
                   {books.length > 1
