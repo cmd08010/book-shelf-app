@@ -55,7 +55,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 50rem;
+  height: 75rem;
   width: 20rem;
   border: 1px solid black;
   background-color: white;
@@ -67,7 +67,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 50rem;
+  height: 75rem;
   width: 20rem;
   border: 1px solid black;
   background-color: white;
@@ -79,7 +79,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 50rem;
+  height: 75rem;
   width: 20rem;
   border: 1px solid black;
   background-color: white;
@@ -131,7 +131,8 @@ section {
 .title {
   display: flex;
   flex-direction: column;
-  margin: 2rem;
+  flex-wrap: wrap;
+  margin: 1rem;
 }
 
 button {
@@ -139,7 +140,7 @@ button {
 }
 
 #name {
-  font-size: xx-large;
+  font-size: large;
 }
 
 .book {
