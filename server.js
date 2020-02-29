@@ -66,18 +66,17 @@ app.post("/api/authors/:name", async (req, res, next) => {
     .catch(next)
 })
 
-app.post("/api/books/:author/:name/:description", async (req, res, next) => {
+app.post("/api/books", async (req, res, next) => {
   await db
-    .getAuthor(req.params.author)
+    .getAuthor(req.body.authorName)
     .then(async authorExists => {
       if (!authorExists) {
-        console.log("in if statement")
-        db.createAuthor(req.params.author).then(async authorResponse => {
+        db.createAuthor(req.body.authorName).then(async authorResponse => {
           await db
             .createBook(
-              req.params.author,
-              req.params.name,
-              req.params.description
+              req.body.authorName,
+              req.body.bookName,
+              req.body.description
             )
             .then(bookResponse => {
               res.send({ authorResponse, bookResponse })
@@ -86,9 +85,9 @@ app.post("/api/books/:author/:name/:description", async (req, res, next) => {
       } else {
         await db
           .createBook(
-            req.params.author,
-            req.params.name,
-            req.params.description
+            req.body.authorName,
+            req.body.bookName,
+            req.body.description
           )
           .then(response => res.send(response))
           .catch(next)
@@ -103,6 +102,18 @@ Delete requests
 
 
 */
+
+app.delete("/api/authors/:id", (req, res, next) => {
+  db.deleteAuthor(req.params.id)
+    .then(() => res.sendStatus(200))
+    .catch(next)
+})
+
+app.delete("/api/books/:id", (req, res, next) => {
+  db.deleteBook(req.params.id)
+    .then(response => res.send(response))
+    .catch(next)
+})
 
 db.sync()
   .then(() => {

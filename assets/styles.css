@@ -30,7 +30,7 @@ body {
     80px 80px, 80px 80px;
 }
 
-.containers {
+.container {
   display: flex;
   flex-direction: column;
 }
@@ -38,8 +38,8 @@ body {
 .search-boxes {
   display: flex;
   flex-direction: row;
-  height: 5%;
-  width: 90%;
+  height: 10%;
+  width: 100%;
   border: 1px solid black;
   background-color: white;
   margin: 2rem;
@@ -56,8 +56,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 50rem;
-  width: 300px;
+  height: 40rem;
+  width: 40rem;
   border: 1px solid black;
   background-color: white;
   margin: 2rem;
@@ -65,10 +65,11 @@ body {
 
 #book-list {
   display: flex;
+
   flex-direction: column;
   align-items: center;
   height: 50rem;
-  width: 300px;
+  width: 5000px;
   border: 1px solid black;
   background-color: white;
   margin: 2rem;
@@ -126,7 +127,7 @@ section {
   align-items: center;
 }
 
-#title {
+.title {
   display: flex;
   flex-direction: column;
   margin: 2rem;
@@ -138,4 +139,52 @@ button {
 
 #name {
   font-size: xx-large;
+}
+
+.book {
+  padding: 15px 0 0 0;
+  margin: auto;
+}
+a:before {
+  /* Just to give a little puddle of a shadow without adding another element */
+  content: "";
+  display: block;
+  width: 80%;
+  height: 1em;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  position: absolute;
+  bottom: -10px;
+  -webkit-filter: blur(5px);
+  filter: blur(5px);
+  z-index: -5;
+}
+.shelf {
+  flex-direction: row;
+  border-bottom: 30px solid #a5a5a5;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  top: -15px;
+  z-index: -10;
+}
+/*Example adding pseudo element to give shelf depth*/
+.shelf:after {
+  content: "";
+  background: #686868;
+  height: 20px;
+  width: calc(100% + 40px); /*IE9+*/
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  margin: 0 -20px;
+}
+
+.true {
+  color: green;
+}
+
+.false {
+  color: red;
 }
