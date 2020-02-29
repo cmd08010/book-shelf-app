@@ -129,7 +129,9 @@
 
         const updateReadStatus = book => {
           book.read === "true" ? (book.read = "false") : (book.read = "true")
+          console.log(books)
           setBooks([...books])
+          console.log(books)
         }
 
         const showDescription = b => {
@@ -163,6 +165,8 @@
               <input onChange={ev => setBookName(ev.target.value)} />
               Author <input onChange={ev => setAuthorName(ev.target.value)} />
               Description
+              <input onChange={ev => setDescription(ev.target.value)} />
+              Book cover
               <input onChange={ev => setDescription(ev.target.value)} />
               <button
                 type="button"
@@ -224,19 +228,15 @@
 
                 {books.map(b => {
                   return (
-                    <div
-                      className={`title ${b.read}`}
-                      key={b.id}
-                      onClick={() => showDescription(b)}
-                    >
-                      {b.title}
+                    <div className={`title ${b.read}`} key={b.id}>
                       <input
                         className="checkbox"
                         type="checkbox"
                         onChange={() => updateReadStatus(b)}
                       />
-                      {" Read"}
-
+                      <br />
+                      <img src={b.book_cover} />
+                      <p onClick={() => showDescription(b)}> {b.title}</p>
                       <button
                         type="button"
                         className="btn btn-outline-secondary btn-sm"

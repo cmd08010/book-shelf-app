@@ -68,7 +68,7 @@ body {
   flex-direction: column;
   align-items: center;
   height: 75rem;
-  width: 20rem;
+  width: 2=30rem;
   border: 1px solid black;
   background-color: white;
   margin: 2rem;
@@ -133,7 +133,14 @@ section {
   flex-direction: column;
   flex-shrink: 3;
   flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
   margin: 0.5rem;
+}
+
+img {
+  height: 50%;
+  width: 50%;
 }
 
 button {
