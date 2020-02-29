@@ -30,9 +30,14 @@ app.get("/api/authors", async (req, res, next) => {
     .catch(next)
 })
 
-app.get("/api/authors/:name", async (req, res, next) => {
-  await db
-    .getAuthor(req.params.name)
+app.get("/api/authors/:name", (req, res, next) => {
+  db.getAuthor(req.params.name)
+    .then(response => res.send(response))
+    .catch(next)
+})
+
+app.get("/api/authorID/:id", (req, res, next) => {
+  db.getAuthorById(req.params.id)
     .then(response => res.send(response))
     .catch(next)
 })

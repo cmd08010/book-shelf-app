@@ -55,6 +55,15 @@ const getAuthor = async name => {
   return response.rows[0]
 }
 
+const getAuthorById = async id => {
+  const SQL = `
+  SELECT * FROM authors where id = $1
+  `
+  const response = await client.query(SQL, [id])
+  console.log(response.rows)
+  return response.rows
+}
+
 const createAuthor = async name => {
   const SQL = `
   INSERT INTO authors (name) VALUES ($1)
@@ -131,6 +140,7 @@ module.exports = {
   getBooks,
   getAuthor,
   getBook,
+  getAuthorById,
   createAuthor,
   createBook,
   getBookTitle,

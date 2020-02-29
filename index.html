@@ -100,6 +100,11 @@
           if (bookName) {
             const books = (await axios.get(`api/bookTitle/${bookName}`)).data
             setBooks([...books])
+
+            const newAuthors = await axios.get(
+              `/api/authorID/${books[0].author_id}`
+            )
+            setAuthors([...newAuthors.data])
           } else {
             const authorsData = await axios.get("/api/authors")
             setAuthors([...authorsData.data])
