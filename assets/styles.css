@@ -131,8 +131,9 @@ section {
 .title {
   display: flex;
   flex-direction: column;
+  flex-shrink: 3;
   flex-wrap: wrap;
-  margin: 1rem;
+  margin: 0.5rem;
 }
 
 button {
@@ -143,10 +144,6 @@ button {
   font-size: large;
 }
 
-.book {
-  padding: 15px 0 0 0;
-  margin: auto;
-}
 a:before {
   /* Just to give a little puddle of a shadow without adding another element */
   content: "";
@@ -189,4 +186,7 @@ a:before {
 
 .false {
   color: red;
+}
+
+.checkbox {
 }

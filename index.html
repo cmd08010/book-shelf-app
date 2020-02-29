@@ -132,90 +132,97 @@
           setBooks([...books])
         }
 
+        const showDescription = b => {
+          console.log(b)
+          const descrip = document.getElementsByClassName("description")
+          console.log(descrip[0])
+          descrip[0].innerHTML = b.description
+        }
+
         return (
-          <div>
+          <div className="containers">
             <h1> Book Shelf</h1>
-            <div className="container">
-              <div className="search-boxes">
-                Book Title
-                <input onChange={ev => setBookName(ev.target.value)} />
-                Author <input onChange={ev => setAuthorName(ev.target.value)} />
-                Description
-                <input onChange={ev => setDescription(ev.target.value)} />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-sm"
-                  data-toggle="popover"
-                  title="Popover title"
-                  onClick={createBook}
-                >
-                  +
-                </button>
+
+            <div className="search-boxes">
+              Book Title
+              <input onChange={ev => setBookName(ev.target.value)} />
+              Author <input onChange={ev => setAuthorName(ev.target.value)} />
+              Description
+              <input onChange={ev => setDescription(ev.target.value)} />
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                data-toggle="popover"
+                title="Popover title"
+                onClick={createBook}
+              >
+                +
+              </button>
+            </div>
+            <div className="lists">
+              <div className="authors">
+                <h1> Authors ({authors.length})</h1>
+                <input className="search-boxes" onChange={searchAuthor}></input>
+                {authors.map(a => {
+                  return (
+                    <div id="name" key={a.id}>
+                      {a.name}
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-sm"
+                        data-toggle="popover"
+                        title="Popover title"
+                        onClick={() => deleteAuthor(a.id)}
+                      >
+                        x
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
-              <div className="lists">
-                <div className="authors lists">
-                  <h1> Authors ({authors.length})</h1>
-                  <input
-                    className="search-boxes"
-                    onChange={searchAuthor}
-                  ></input>
-                  {authors.map(a => {
-                    return (
-                      <div id="name" key={a.id}>
-                        {a.name}
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary btn-sm"
-                          data-toggle="popover"
-                          title="Popover title"
-                          onClick={() => deleteAuthor(a.id)}
-                        >
-                          x
-                        </button>
-                      </div>
-                    )
-                  })}
-                </div>
 
-                <div className="books lists">
-                  <h1>Books ({books.length})</h1>
-                  <input
-                    className="search-boxes"
-                    onChange={searchBooks}
-                  ></input>
+              <div className="books">
+                <h1>Books ({books.length})</h1>
+                <input className="search-boxes" onChange={searchBooks}></input>
 
-                  {books.map(b => {
-                    return (
-                      <div className={`title ${b.read}`} key={b.id}>
-                        <input
-                          type="checkbox"
-                          onChange={() => updateReadStatus(b)}
-                        ></input>
+                {books.map(b => {
+                  return (
+                    <div
+                      className={`title ${b.read}`}
+                      key={b.id}
+                      onClick={() => showDescription(b)}
+                    >
+                      {b.title}
+                      <input
+                        className="checkbox"
+                        type="checkbox"
+                        onChange={() => updateReadStatus(b)}
+                      />
+                      {" Read"}
 
-                        {b.title}
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary btn-sm"
-                          data-toggle="popover"
-                          title="Popover title"
-                          onClick={() => deleteBook(b.id)}
-                        >
-                          x
-                        </button>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className="description">
-                  <h1>Description</h1>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary btn-sm"
+                        data-toggle="popover"
+                        title="Popover title"
+                        onClick={() => deleteBook(b.id)}
+                      >
+                        x
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
 
-                  {books.length > 1
-                    ? "Select a book to see a description"
-                    : books.map(d => {
-                        let fullDescrip = d.description
-                        return <div key={d.id}>{fullDescrip}</div>
-                      })}
-                </div>
+              <div className="description">
+                <h1>Description</h1>
+
+                {books.length > 1
+                  ? "Select a book to see a description"
+                  : books.map(d => {
+                      let fullDescrip = d.description
+                      return <div key={d.id}>{fullDescrip}</div>
+                    })}
               </div>
             </div>
           </div>
