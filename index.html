@@ -61,11 +61,13 @@
           }
 
           const created = (
-            await axios.post(
-              `/api/books/${authorName}/${bookName}/${description}`
-            )
+            await axios.post(`/api/books/`, {
+              authorName,
+              bookName,
+              description
+            })
           ).data
-          console.log(created, "this is my response from axios.post")
+
           if (created.authorResponse) {
             setAuthors([...authors, created.authorResponse])
             setBooks([...books, created.bookResponse])
@@ -74,24 +76,23 @@
           }
         }
 
-        const searchAuthor = async ev => {
+        const searchAuthor = ev => {
           const authorName = ev.target.value
           if (authorName) {
-            const authors = (await axios.get(`/api/authors/${authorName}`)).data
-            const books = (await axios.get(`api/books/${authorName}`)).data
-            setAuthors([authors])
-            setBooks([...books])
+            axios
+              .get(`/api/authors/${authorName}`)
+              .then(response => setAuthors([response.data]))
+              .then(
+                axios
+                  .get(`api/books/${authorName}`)
+                  .then(response => setBooks([...response.data]))
+              )
           } else {
             axios
               .get("/api/authors")
-              .then(response => {
-                setAuthors([...response.data])
-              })
-              .then(
-                axios
-                  .get("/api/books")
-                  .then(response => setBooks([...response.data]))
-              )
+              .data.then(authorsData => setAuthors([...authorsData]))
+              .then(axios.get("/api/books"))
+              .data.then(booksData => setBooks([...booksData]))
           }
         }
 
@@ -101,23 +102,36 @@
             const books = (await axios.get(`api/bookTitle/${bookName}`)).data
             setBooks([...books])
           } else {
-            axios
-              .get("/api/authors")
-              .then(response => {
-                setAuthors([...response.data])
-              })
-              .then(
-                axios
-                  .get("/api/books")
-                  .then(response => setBooks([...response.data]))
-              )
+            const authorsData = await axios.get("/api/authors")
+            setAuthors([...authorsData.data])
+            const booksData = await axios.get("/api/books")
+            setBooks([...booksData.data])
           }
+        }
+
+        const deleteAuthor = async id => {
+          await axios.delete(`/api/authors/${id}`)
+          const response = await axios.get("/api/authors")
+          setAuthors([...response.data])
+          const booksResponse = await axios.get("/api/books")
+          setBooks([...booksResponse.data])
+        }
+
+        const deleteBook = async id => {
+          await axios.delete(`/api/books/${id}`)
+          const response = axios.get("/api/books")
+          setBooks([...response.data])
+        }
+
+        const updateReadStatus = book => {
+          book.read === "true" ? (book.read = "false") : (book.read = "true")
+          setBooks([...books])
         }
 
         return (
           <div>
             <h1> Book Shelf</h1>
-            <div className="containers">
+            <div className="container">
               <div className="search-boxes">
                 Book Title
                 <input onChange={ev => setBookName(ev.target.value)} />
@@ -135,7 +149,7 @@
                 </button>
               </div>
               <div className="lists">
-                <div id="author-list">
+                <div className="authors lists">
                   <h1> Authors ({authors.length})</h1>
                   <input
                     className="search-boxes"
@@ -145,12 +159,21 @@
                     return (
                       <div id="name" key={a.id}>
                         {a.name}
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm"
+                          data-toggle="popover"
+                          title="Popover title"
+                          onClick={() => deleteAuthor(a.id)}
+                        >
+                          x
+                        </button>
                       </div>
                     )
                   })}
                 </div>
 
-                <div id="book-list">
+                <div className="books lists">
                   <h1>Books ({books.length})</h1>
                   <input
                     className="search-boxes"
@@ -159,23 +182,34 @@
 
                   {books.map(b => {
                     return (
-                      <div id="title" key={b.id}>
+                      <div className={`title ${b.read}`} key={b.id}>
+                        <input
+                          type="checkbox"
+                          onChange={() => updateReadStatus(b)}
+                        ></input>
+
                         {b.title}
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm"
+                          data-toggle="popover"
+                          title="Popover title"
+                          onClick={() => deleteBook(b.id)}
+                        >
+                          x
+                        </button>
                       </div>
                     )
                   })}
                 </div>
-                <div id="description">
+                <div className="description">
                   <h1>Description</h1>
+
                   {books.length > 1
                     ? "Select a book to see a description"
                     : books.map(d => {
                         let fullDescrip = d.description
-                        return (
-                          <div id="title" key={d.id}>
-                            {fullDescrip.substr(0, 50)}...
-                          </div>
-                        )
+                        return <div key={d.id}>{fullDescrip}</div>
                       })}
                 </div>
               </div>
