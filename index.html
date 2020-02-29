@@ -133,10 +133,25 @@
         }
 
         const showDescription = b => {
-          console.log(b)
-          const descrip = document.getElementsByClassName("description")
-          console.log(descrip[0])
-          descrip[0].innerHTML = b.description
+          axios
+            .get(`/api/bookTitle/${b.title}`)
+            .then(response => setBooks([...response.data]))
+        }
+
+        const handleAuthorClick = a => {
+          axios
+            .get(`/api/bookByAuthorID/${a.id}`)
+            .then(response => setBooks([...response.data]))
+        }
+
+        const getAllBooks = () => {
+          axios.get("/api/books").then(response => setBooks([...response.data]))
+        }
+
+        const getAllAuthors = () => {
+          axios
+            .get("/api/authors")
+            .then(response => setAuthors([...response.data]))
         }
 
         return (
@@ -162,10 +177,23 @@
             <div className="lists">
               <div className="authors">
                 <h1> Authors ({authors.length})</h1>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  data-toggle="popover"
+                  title="Popover title"
+                  onClick={getAllAuthors}
+                >
+                  Show all
+                </button>
                 <input className="search-boxes" onChange={searchAuthor}></input>
                 {authors.map(a => {
                   return (
-                    <div id="name" key={a.id}>
+                    <div
+                      id="name"
+                      key={a.id}
+                      onClick={() => handleAuthorClick(a)}
+                    >
                       {a.name}
                       <button
                         type="button"
@@ -183,6 +211,15 @@
 
               <div className="books">
                 <h1>Books ({books.length})</h1>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  data-toggle="popover"
+                  title="Popover title"
+                  onClick={getAllBooks}
+                >
+                  Show all
+                </button>
                 <input className="search-boxes" onChange={searchBooks}></input>
 
                 {books.map(b => {
@@ -216,7 +253,6 @@
 
               <div className="description">
                 <h1>Description</h1>
-
                 {books.length > 1
                   ? "Select a book to see a description"
                   : books.map(d => {

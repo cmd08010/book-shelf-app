@@ -42,6 +42,13 @@ app.get("/api/authorID/:id", (req, res, next) => {
     .catch(next)
 })
 
+app.get("/api/bookByAuthorID/:id", (req, res, next) => {
+  console.log(req.params.id, "request params")
+  db.getBookByAuthorID(req.params.id)
+    .then(response => res.send(response))
+    .catch(next)
+})
+
 app.get("/api/books", async (req, res, next) => {
   await db
     .getBooks()
