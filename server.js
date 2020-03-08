@@ -117,7 +117,7 @@ Delete requests
 
 app.delete("/api/authors/:id", (req, res, next) => {
   db.deleteAuthor(req.params.id)
-    .then(() => res.sendStatus(200))
+    .then(() => res.status(200))
     .catch(next)
 })
 
